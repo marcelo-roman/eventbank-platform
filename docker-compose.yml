@@ -1,0 +1,95 @@
+name: eventbank
+
+x-service-environment: &service-environment
+  ASPNETCORE_ENVIRONMENT: Production
+  RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: eventbank
+      POSTGRES_PASSWORD: eventbank
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./deploy/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventbank"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  accounts:
+    image: ghcr.io/marcelo-roman/eventbank-accounts:latest
+    environment:
+      <<: *service-environment
+      ConnectionStrings__Accounts: Host=postgres;Database=accounts;Username=eventbank;Password=eventbank
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  transfers:
+    image: ghcr.io/marcelo-roman/eventbank-transfers:latest
+    environment:
+      <<: *service-environment
+      ConnectionStrings__Transfers: Host=postgres;Database=transfers;Username=eventbank;Password=eventbank
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  gateway:
+    image: ghcr.io/marcelo-roman/eventbank-gateway:latest
+    environment:
+      ReverseProxy__Clusters__accounts__Destinations__primary__Address: http://accounts:8080
+      ReverseProxy__Clusters__transfers__Destinations__primary__Address: http://transfers:8080
+    ports:
+      - "5100:8080"
+    depends_on:
+      - accounts
+      - transfers
+
+  shell:
+    image: ghcr.io/marcelo-roman/eventbank-shell:latest
+    environment:
+      ACCOUNTS_REMOTE_URL: http://localhost:3001/remoteEntry.js
+      TRANSFERS_REMOTE_URL: http://localhost:3002/remoteEntry.js
+      OPERATIONS_REMOTE_URL: http://localhost:3003/remoteEntry.js
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
+  mfe-accounts:
+    image: ghcr.io/marcelo-roman/eventbank-mfe-accounts:latest
+    ports:
+      - "3001:80"
+
+  mfe-transfers:
+    image: ghcr.io/marcelo-roman/eventbank-mfe-transfers:latest
+    ports:
+      - "3002:80"
+
+  mfe-operations:
+    image: ghcr.io/marcelo-roman/eventbank-mfe-operations:latest
+    ports:
+      - "3003:80"
+
+volumes:
+  postgres-data:

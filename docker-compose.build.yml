@@ -1,0 +1,32 @@
+services:
+  accounts:
+    build:
+      context: ../eventbank-accounts
+      additional_contexts:
+        feed: ../.feed
+
+  transfers:
+    build:
+      context: ../eventbank-transfers
+      additional_contexts:
+        feed: ../.feed
+
+  gateway:
+    build:
+      context: ../eventbank-gateway
+
+  shell:
+    build:
+      context: ../eventbank-shell
+
+  mfe-accounts:
+    build:
+      context: ../eventbank-mfe-accounts
+
+  mfe-transfers:
+    build:
+      context: ../eventbank-mfe-transfers
+
+  mfe-operations:
+    build:
+      context: ../eventbank-mfe-operations
