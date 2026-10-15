@@ -155,6 +155,17 @@ The seed opens four accounts and sends three transfers: one completes, one fails
 
 Stop one remote with `docker compose stop mfe-transfers` to see the shell keep working around it.
 
+## End-to-end tests
+
+[Playwright](https://playwright.dev) drives the whole platform through the browser: opening and funding an account, a domain rule refusing an overdraft, replaying an aggregate to past versions, a transfer that completes, one declined for lack of funds, one refunded after the destination closes mid-saga, a read-model rebuild, and the shell surviving a remote that is down.
+
+```bash
+pnpm install
+pnpm exec playwright install chromium
+pnpm e2e              # against http://localhost:3000; set EVENTBANK_URL to point elsewhere
+pnpm e2e:report       # screenshots of every step, a video and a trace for each test
+```
+
 ## Trade-offs
 
 Choices made to keep the example small and readable:
