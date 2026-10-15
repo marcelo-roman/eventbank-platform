@@ -36,7 +36,7 @@ services:
     image: ghcr.io/marcelo-roman/eventbank-accounts:latest
     environment:
       <<: *service-environment
-      ConnectionStrings__Accounts: Host=postgres;Database=accounts;Username=eventbank;Password=eventbank
+      ConnectionStrings__Accounts: Host=postgres;Database=accounts;Username=eventbank;Password=eventbank;GSS Encryption Mode=Disable
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,7 +47,7 @@ services:
     image: ghcr.io/marcelo-roman/eventbank-transfers:latest
     environment:
       <<: *service-environment
-      ConnectionStrings__Transfers: Host=postgres;Database=transfers;Username=eventbank;Password=eventbank
+      ConnectionStrings__Transfers: Host=postgres;Database=transfers;Username=eventbank;Password=eventbank;GSS Encryption Mode=Disable
     depends_on:
       postgres:
         condition: service_healthy
