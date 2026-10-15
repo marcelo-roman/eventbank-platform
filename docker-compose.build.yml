@@ -1,4 +1,14 @@
 services:
+  keycloak:
+    build:
+      context: ../eventbank-identity
+
+  customers:
+    build:
+      context: ../eventbank-customers
+      additional_contexts:
+        feed: ../.feed
+
   accounts:
     build:
       context: ../eventbank-accounts
@@ -8,6 +18,18 @@ services:
   transfers:
     build:
       context: ../eventbank-transfers
+      additional_contexts:
+        feed: ../.feed
+
+  cards:
+    build:
+      context: ../eventbank-cards
+      additional_contexts:
+        feed: ../.feed
+
+  notifications:
+    build:
+      context: ../eventbank-notifications
       additional_contexts:
         feed: ../.feed
 
@@ -30,3 +52,15 @@ services:
   mfe-operations:
     build:
       context: ../eventbank-mfe-operations
+
+  mfe-onboarding:
+    build:
+      context: ../eventbank-mfe-onboarding
+
+  mfe-cards:
+    build:
+      context: ../eventbank-mfe-cards
+
+  mfe-backoffice:
+    build:
+      context: ../eventbank-mfe-backoffice

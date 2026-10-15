@@ -7,11 +7,18 @@ repositories=(
   eventbank-contracts
   eventbank-accounts
   eventbank-transfers
+  eventbank-identity
+  eventbank-customers
+  eventbank-cards
+  eventbank-notifications
   eventbank-gateway
   eventbank-shell
   eventbank-mfe-accounts
   eventbank-mfe-transfers
   eventbank-mfe-operations
+  eventbank-mfe-onboarding
+  eventbank-mfe-cards
+  eventbank-mfe-backoffice
 )
 
 for repository in "${repositories[@]}"; do

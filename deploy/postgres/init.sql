@@ -1,2 +1,6 @@
 CREATE DATABASE accounts;
 CREATE DATABASE transfers;
+CREATE DATABASE customers;
+CREATE DATABASE cards;
+CREATE DATABASE notifications;
+CREATE DATABASE keycloak;
